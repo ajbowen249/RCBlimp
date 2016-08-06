@@ -1,4 +1,5 @@
 #include "Transmitter.h"
+
 Transmitter::Transmitter(int packetSize, int diddleSize, void (*write)(byte*, int)) {
   _write = write;
   _packetSize = packetSize;

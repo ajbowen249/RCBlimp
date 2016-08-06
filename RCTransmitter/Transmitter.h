@@ -2,7 +2,6 @@
 //with the raw wireless serial link.
 
 #include "Arduino.h"
-#include "SoftwareSerial.h"
 
 #ifndef Transmitter_h
 #define Transmitter_h

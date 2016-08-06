@@ -3,10 +3,15 @@
 //serial, and retransmits over uart.
 
 #include <SoftwareSerial.h>
+#include "Reciever.h"
 #define BAUDRATE 9600
 #define PACKET_SIZE 3
 
-byte rxBuffer[PACKET_SIZE];
+byte Read();
+int Available();
+void ProcessPacket(byte packet[]);
+
+Reciever _reciever(PACKET_SIZE, Read, Available, ProcessPacket);
 
 void setup() {
   Serial.begin(BAUDRATE);
@@ -18,40 +23,22 @@ void setup() {
 }
 
 void loop() {
-  if(Serial2.available()) {
-    char inChar = Serial2.read();
-    if(inChar != 0x55) return;
-
-    while(!Serial2.available()) {}
-    inChar = Serial2.read();
-    if(inChar != 0xAA) return;
-    
-    while(!Serial2.available()) {}
-    byte sum = Serial2.read();
-
-    while(Serial2.available() < PACKET_SIZE){}
-
-    for(int i = 0; i < PACKET_SIZE; i++){
-      rxBuffer[i] = Serial2.read();
-    }
-
-    if(CheckSum(rxBuffer, sum)){
-      Serial.print("instruction code: ");
-      Serial.print(rxBuffer[0]);
-      Serial.print(" arg 1: ");
-      Serial.print(rxBuffer[1]);
-      Serial.print(" arg 2: ");
-      Serial.println(rxBuffer[2]);
-    }
-  }
+  _reciever.Recieve();
 }
 
-bool CheckSum(byte buffer[], byte sum) {
-  byte realSum = 0;
+int Available(){
+  return Serial2.available();
+}
 
-  for(int i = 0; i < PACKET_SIZE; i++) {
-    realSum += buffer[i];
-  }
+byte Read(){
+  return Serial2.read();
+}
 
-  return realSum == sum;
+void ProcessPacket(byte packet[]){
+  Serial.print("instruction code: ");
+  Serial.print(packet[0]);
+  Serial.print(" arg 1: ");
+  Serial.print(packet[1]);
+  Serial.print(" arg 2: ");
+  Serial.println(packet[2]);
 }
