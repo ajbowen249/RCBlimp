@@ -8,6 +8,9 @@ Reciever::Reciever(int packetSize, byte (*read)(), int (*available)(), void (*pr
 }
 
 void Reciever::Recieve() {
+  //TODO: This could be refactored into a state machine
+  //for non-blocking input.
+
   if(_available()) {
     char inChar = _read();
     if(inChar != 0x55) return;
